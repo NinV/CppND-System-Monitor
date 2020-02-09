@@ -25,5 +25,5 @@ string Format::ElapsedTime(long seconds) {
     else {ss = std::to_string(s);}
     
     
-    return sh + ":" + sm + ":" + ss + " " + std::to_string(seconds); 
+    return sh + ":" + sm + ":" + ss; 
 }
