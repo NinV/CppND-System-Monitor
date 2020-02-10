@@ -17,11 +17,33 @@ Processor& System::Cpu() { return cpu_; }
 
 // TODO: Return a container composed of the system's processes
 vector<Process>& System::Processes() { 
+
+    // because a Pid can be reused when a process ended, we need to re-scan 
+    // the pid list each time System object update
     processes_.clear();
     vector<int> Pids_ = LinuxParser::Pids();
-    for (auto i : Pids_){
-        processes_.push_back(Process(i));
+    for (int pid : Pids_){
+        string pcommand = LinuxParser::Command(pid);
+        string puser = LinuxParser::User(pid);
+        string pram = LinuxParser::Ram(pid);
+
+        // calc process cpu utilization, uptime 
+        vector<string> pstat = LinuxParser::GetStat(pid);
+        // stat_ = LinuxParser::GetStat(pid_);
+        if (!pstat.empty()){
+            // utimeIdx{14}, stimeIdx{15}, cutimeIdx{16}, cstimeIdx{17}, starttimeIdx{22}
+            long utime = std::stol(pstat[utimeIdx-1]);
+            long stime = std::stol(pstat[stimeIdx-1]);
+            long cutime = std::stol(pstat[cutimeIdx-1]);
+            long cstime = std::stol(pstat[cstimeIdx-1]);
+            long starttime = std::stol(pstat[starttimeIdx-1]);
+            float totalTime = float(utime + stime + cutime + cstime)/sysconf(_SC_CLK_TCK);
+            float pelapsedTime = uptime - (starttime / sysconf(_SC_CLK_TCK));
+            float pcpuUti =  totalTime / pelapsedTime; 
+            processes_.push_back(Process(pid, pcpuUti, totalTime, puser, pcommand, pram));
+        }
     }
+    std::sort(processes_.begin(), processes_.end());
     return processes_; 
 }
 

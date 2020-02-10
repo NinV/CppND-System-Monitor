@@ -299,29 +299,37 @@ string LinuxParser::User(int pid) {
   return string(); 
 }
 
-int utimeIdx{14}, stimeIdx{15}, cutimeIdx{16}, cstimeIdx{17}, starttimeIdx{22};
-// TODO: Read and return the uptime of a process
-// REMOVE: [[maybe_unused]] once you define the function
-long LinuxParser::UpTime(int pid) { 
+// int utimeIdx{14}, stimeIdx{15}, cutimeIdx{16}, cstimeIdx{17}, starttimeIdx{22};
+vector<string> LinuxParser::GetStat(int pid){
+  int starttimeIdx{22};
+  vector<string> stat;
   string line;
-  long uptime;
   std::ifstream filestream(kProcDirectory + std::to_string(pid) + kStatFilename);
   if (filestream.is_open()){
     while (std::getline(filestream, line))
     {
       std::istringstream linestream(line);
       string temp;
-      for(int i=1; i <= utimeIdx; i++){
+      for(int i=1; i <= starttimeIdx; i++){
         linestream >> temp;
+        stat.push_back(temp);
       }
-      uptime = stol(temp);
     }
     filestream.close();
-    return uptime;
   }
-  return 0; 
+  return stat;
 }
 
-// TODO: Read and return the number of active jiffies for a PID
+// 1-based index
+// int utimeIdx{14}, stimeIdx{15}, cutimeIdx{16}, cstimeIdx{17}, starttimeIdx{22};
+// TODO: Read and return the uptime of a process
 // REMOVE: [[maybe_unused]] once you define the function
-long LinuxParser::ActiveJiffies(int pid[[maybe_unused]]) { return 0; }
+// long LinuxParser::StartTime(int pid) { 
+//   vector<std::string> stat=GetStat(pid);
+//   long uptime;
+//   if (!stat.empty()){
+//     uptime = stol(stat[starttimeIdx -1]);
+//     return uptime;
+//   }
+//   return 0; 
+// }

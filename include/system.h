@@ -24,6 +24,9 @@ class System {
   Processor cpu_ = {};
   std::vector<Process> processes_ = {};
   long uptime{-1};
+  
+  // 1-based index (for extracting data for process)
+  static const int utimeIdx{14}, stimeIdx{15}, cutimeIdx{16}, cstimeIdx{17}, starttimeIdx{22};
 };
 
 #endif
