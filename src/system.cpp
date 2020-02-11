@@ -40,7 +40,7 @@ vector<Process>& System::Processes() {
             float totalTime = float(utime + stime + cutime + cstime)/sysconf(_SC_CLK_TCK);
             float pelapsedTime = uptime - (starttime / sysconf(_SC_CLK_TCK));
             float pcpuUti =  totalTime / pelapsedTime; 
-            processes_.push_back(Process(pid, pcpuUti, totalTime, puser, pcommand, pram));
+            processes_.push_back(Process(pid, pcpuUti, pelapsedTime, puser, pcommand, pram));
         }
     }
     std::sort(processes_.begin(), processes_.end());
