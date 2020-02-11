@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <string>
 #include <vector>
+#include <iomanip>
 
 #include "linux_parser.h"
 
@@ -235,6 +236,7 @@ string LinuxParser::Command(int pid) {
 // REMOVE: [[maybe_unused]] once you define the function
 string LinuxParser::Ram(int pid) { 
   string line, start, memUsages;
+  int num;
   std::ifstream filestream(kProcDirectory + std::to_string(pid) + kStatusFilename);
   if (filestream.is_open()){
     while (std::getline(filestream, line))
@@ -243,6 +245,24 @@ string LinuxParser::Ram(int pid) {
       linestream >> start;
       if(start == "VmSize:"){
         linestream >> memUsages;
+
+        // kB --> MB
+        num = stoi(memUsages) / 1000;
+        std::ostringstream ostr;
+
+        // Set Fixed -Point Notation
+        ostr << std::fixed;
+        
+        // Set precision to 1 digits
+        ostr << std::setprecision(1);
+        
+        // Set width to 5
+        ostr << std::setfill(' ') << std::setw(5);
+        
+        // Add num to stream
+        ostr << num;
+
+        memUsages = ostr.str();
         return memUsages;
       }
     }
