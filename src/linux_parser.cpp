@@ -14,7 +14,6 @@ using std::to_string;
 using std::vector;
 
 
-// DONE: An example of how to read data from the filesystem
 string LinuxParser::OperatingSystem() {
   string line;
   string key;
@@ -37,7 +36,6 @@ string LinuxParser::OperatingSystem() {
   return value;
 }
 
-// DONE: An example of how to read data from the filesystem
 string LinuxParser::Kernel() {
   string os, version, kernel;
   string line;
@@ -50,7 +48,7 @@ string LinuxParser::Kernel() {
   return kernel;
 }
 
-// BONUS: Update this to use std::filesystem
+// TODO: Update this to use std::filesystem
 vector<int> LinuxParser::Pids() {
   vector<int> pids;
   DIR* directory = opendir(kProcDirectory.c_str());
@@ -70,7 +68,7 @@ vector<int> LinuxParser::Pids() {
   return pids;
 }
 
-// TODO: Read and return the system memory utilization
+// Read and return the system memory utilization
 float LinuxParser::MemoryUtilization() { 
   float memTotal, memFree;
   string smemTotal, smemFree;
@@ -99,7 +97,7 @@ float LinuxParser::MemoryUtilization() {
   return 0.0; 
   }
 
-// TODO: Read and return the system uptime
+// Read and return the system uptime
 long LinuxParser::UpTime() { 
   long upTime;
   string supTime;
@@ -121,7 +119,7 @@ long LinuxParser::UpTime() {
   }
   return 0; }
 
-// TODO: Read and return the number of jiffies for the system
+// Read and return the number of jiffies for the system
 long LinuxParser::Jiffies() { 
   vector<long> cpuUti = LinuxParser::CpuUtilization();
   return LinuxParser::ActiveJiffies(cpuUti) + LinuxParser::IdleJiffies(cpuUti); }
@@ -131,7 +129,7 @@ long LinuxParser::Jiffies(vector<long> cpuUti){
   }
 
 
-// TODO: Read and return the number of active jiffies for the system
+// Read and return the number of active jiffies for the system
 long LinuxParser::ActiveJiffies() {
   vector<long> cpuUti = LinuxParser::CpuUtilization();
   return LinuxParser::ActiveJiffies(cpuUti); 
@@ -139,6 +137,7 @@ long LinuxParser::ActiveJiffies() {
 
 long LinuxParser::ActiveJiffies(vector<long> cpuUti){
   long activeJiffies;
+  
   // NonIdle = user + nice + system + irq + softirq + steal
   activeJiffies = cpuUti[kUser_] + cpuUti[kNice_] + cpuUti[kSystem_] 
                   + cpuUti[kIRQ_] + cpuUti[kSoftIRQ_] + cpuUti[kSteal_];
@@ -146,20 +145,21 @@ long LinuxParser::ActiveJiffies(vector<long> cpuUti){
 
 };
 
-// TODO: Read and return the number of idle jiffies for the system
+// Read and return the number of idle jiffies for the system
 long LinuxParser::IdleJiffies() { 
   vector<long> cpuUti = LinuxParser::CpuUtilization();
   return LinuxParser::IdleJiffies(cpuUti); 
 }
 long LinuxParser::IdleJiffies(vector<long> cpuUti){
   long idleJiffies;
+  
   // Idle = idle + iowait
   idleJiffies = cpuUti[kIdle_] + cpuUti[kIOwait_];
   return idleJiffies; 
 
 }
 
-// TODO: Read and return CPU utilization
+// Read and return CPU utilization
 vector<long> LinuxParser::CpuUtilization() {
   int numCPUStates = 10;
   vector<long> jiffies;
@@ -169,6 +169,7 @@ vector<long> LinuxParser::CpuUtilization() {
     
     // get cpu utilization info from the first line
     std::getline(filestream, line);
+    
     std::istringstream linestream(line);
     linestream >> start;
     for(int i=0; i<numCPUStates; i++){
@@ -180,7 +181,7 @@ vector<long> LinuxParser::CpuUtilization() {
   return jiffies;
 }
 
-// TODO: Read and return the total number of processes
+// Read and return the total number of processes
 int LinuxParser::TotalProcesses() { 
   string line, start, totalProc;
   std::ifstream filestream(kProcDirectory + kStatFilename);
@@ -200,7 +201,7 @@ int LinuxParser::TotalProcesses() {
   return 0;
 }
 
-// TODO: Read and return the number of running processes
+// Read and return the number of running processes
 int LinuxParser::RunningProcesses() { 
   string line, start, runningProc;
   std::ifstream filestream(kProcDirectory + kStatFilename);
@@ -220,8 +221,7 @@ int LinuxParser::RunningProcesses() {
   return 0;
 }
 
-// TODO: Read and return the command associated with a process
-// REMOVE: [[maybe_unused]] once you define the function
+// Read and return the command associated with a process
 string LinuxParser::Command(int pid) {
   string line;
   std::ifstream filestream(kProcDirectory + std::to_string(pid) + kCmdlineFilename);
@@ -232,8 +232,7 @@ string LinuxParser::Command(int pid) {
   }
   return string(); }
 
-// TODO: Read and return the memory used by a process
-// REMOVE: [[maybe_unused]] once you define the function
+// Read and return the memory used by a process
 string LinuxParser::Ram(int pid) { 
   string line, start, memUsages;
   int num;
@@ -270,8 +269,7 @@ string LinuxParser::Ram(int pid) {
   }
   return string(); }
 
-// TODO: Read and return the user ID associated with a process
-// REMOVE: [[maybe_unused]] once you define the function
+// Read and return the user ID associated with a process
 string LinuxParser::Uid(int pid) { 
   string line, start, Uid;
   std::ifstream filestream(kProcDirectory + std::to_string(pid) + kStatusFilename);
@@ -293,8 +291,7 @@ string LinuxParser::Uid(int pid) {
 // lookup table
 std::map<int, std::string> UidToUsername;
 
-// TODO: Read and return the user associated with a process
-// REMOVE: [[maybe_unused]] once you define the function
+// Read and return the user associated with a process
 string LinuxParser::User(int pid) { 
   string line, username, pwd, uid_;
   int Uid_ = stoi(LinuxParser::Uid(pid));
@@ -319,7 +316,7 @@ string LinuxParser::User(int pid) {
   return string(); 
 }
 
-// int utimeIdx{14}, stimeIdx{15}, cutimeIdx{16}, cstimeIdx{17}, starttimeIdx{22};
+
 vector<string> LinuxParser::GetStat(int pid){
   int starttimeIdx{22};
   vector<string> stat;
@@ -339,17 +336,3 @@ vector<string> LinuxParser::GetStat(int pid){
   }
   return stat;
 }
-
-// 1-based index
-// int utimeIdx{14}, stimeIdx{15}, cutimeIdx{16}, cstimeIdx{17}, starttimeIdx{22};
-// TODO: Read and return the uptime of a process
-// REMOVE: [[maybe_unused]] once you define the function
-// long LinuxParser::StartTime(int pid) { 
-//   vector<std::string> stat=GetStat(pid);
-//   long uptime;
-//   if (!stat.empty()){
-//     uptime = stol(stat[starttimeIdx -1]);
-//     return uptime;
-//   }
-//   return 0; 
-// }
